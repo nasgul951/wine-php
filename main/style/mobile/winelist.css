@@ -1,0 +1,62 @@
+/* winelist.css (mobile) */
+
+html, body { padding: 0; margin: 0; height: 100% }
+body { background: url(../../../images/grapes.jpeg) repeat fixed; }
+form { padding: 0; margin: 0; }
+input { height: 19px; font-size: 8pt; margin: 0px; padding: 0px; }
+table {
+	font-family: sans-serif; 
+	font-size: 8pt;
+}
+
+
+#page_body {
+	position: relative;
+	width: 768px;
+	background-color: #C0C0C0;
+	text-align: left;
+}
+#body_titlebar{
+	position: relative; height: 18px;
+	font-size: 10pt; font-weight: bold;
+	border-bottom: 2px groove;
+}
+#titlebar_right { position: absolute; top: 0px; right: 5px; }
+#body_header{
+	position: relative;
+	font-size: 14pt; font-weight: bold;
+	text-align: center;
+	padding: 5px 2px 5px 2px;
+	border-bottom: 2px groove;
+}
+#body_totals { 
+	position: absolute; left: 5px; top: 5px;
+	font: 10pt bold; }
+#title_filter {
+	position: absolute; right: 5px; top: 5px;
+}
+#col1_title { width: 170px; cursor: pointer; }
+#col2_title { width: 200px;	cursor: pointer; }
+#col3_title { width: 110px;	cursor: pointer; }
+#col4_title { width: 55px; cursor: pointer; }
+#col5_title { width: 55px; }
+#col6_title { width: 110px; }
+#col1_title, #col2_title, #col3_title, #col4_title, #col5_title, #col6_title
+	{ font-weight: bold; overflow: hidden; border-bottom: 2px solid black; }
+.odd_row { background-color: #CCCCCC; cursor: pointer; }
+.even_row { background-color: #FFDDDD; cursor: pointer; }
+
+.col1_data { width: 170px; overflow: hidden; }
+.col2_data { width: 200px; overflow: hidden; }
+.col3_data { width: 110px; overflow: hidden; }
+.col4_data { width: 55px; text-align: right; overflow: hidden; }
+.col5_data { width: 55px; text-align: right; overflow: hidden; }
+.col6_data { width: 110px; text-align: right; overflow: hidden; }
+
+#body_footerbar{
+	position: relative; height: 18px;
+	font-size: 10pt; font-weight: bold;
+	border-top: 2px groove;
+}
+#footerbar_right { position: absolute; top: 0px; right: 5px; }
+

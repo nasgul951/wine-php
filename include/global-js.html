@@ -1,0 +1,10 @@
+<script type="text/javascript" src="../js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="../js/bootstrap.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		var page = $("body").attr("nav-active");
+		var nav_item = $("#" + page);
+		if (nav_item.length > 0)
+			nav_item.addClass("active");
+	});
+</script>

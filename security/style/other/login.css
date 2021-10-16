@@ -1,0 +1,44 @@
+/* login.css */
+
+body {
+	font-family: sans-serif;
+	font-size: 8pt;
+}
+table {
+	font-size: 8pt;
+}
+form { 
+	margin: 0;
+	padding: 0px;
+}
+input {
+	padding: 0px; 
+	height: 19px; 
+	font-size: 8pt; 
+}
+#div_login { 
+	width: 170px;
+	border: 1px solid black; 
+}
+#login_table { width: 100% }
+#login_title {
+	width: 100%; height: 15 px;
+	font-size: 8pt; font-weight: bold;
+	text-align: center;
+	color: white;
+	background: #FF00FF;
+}
+
+.login_detail { padding: 2px 0px 2px 0px; }
+#lbl_user { width: 70px; padding-left: 3px; }
+#txt_user {	width: 80px; }
+#lbl_pwd { width: 70px; padding-left: 3px;  }
+#txt_pwd { width: 80px; }
+#btn_login { 
+	padding: 0px; 
+	font-size: 8pt;
+	font-weight: bold;	
+	height: 20px;
+	margin-right: 3px;
+}
+
