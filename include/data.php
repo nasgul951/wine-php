@@ -1,5 +1,7 @@
 <?php
-	include("../config.php"); 
+	$root = realpath($_SERVER["DOCUMENT_ROOT"]);
+	include "$root/config.php";
+	
 	// Setup database connection.
 	$mysqli = new mysqli($db_server, $db_user, $db_password, $db_name);
 	/* check connection */
