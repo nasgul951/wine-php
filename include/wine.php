@@ -51,7 +51,7 @@ class Wine {
 		FROM tblWineList INNER JOIN tblBottles
 		ON tblWineList.wineid = tblBottles.wineid
 		WHERE consumed = 0
-		GROUP BY varietal, vineyard, label, vintage, notes";
+		GROUP BY tblWineList.wineid, varietal, vineyard, label, vintage, notes";
         $this->stmt = $this->pdo->prepare($sql);
         $this->stmt->execute();
         //PDO::FETCH_CLASS, "wineItem"
