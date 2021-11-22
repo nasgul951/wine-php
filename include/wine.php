@@ -58,6 +58,19 @@ class Wine {
         return $this->stmt->fetchAll();
     }
 
+    function varietals () {
+        $sql = "
+		SELECT varietal
+            , count(1) as count
+		FROM tblWineList INNER JOIN tblBottles
+		ON tblWineList.wineid = tblBottles.wineid
+		WHERE consumed = 0
+		GROUP BY varietal";
+        $this->stmt = $this->pdo->prepare($sql);
+        $this->stmt->execute();
+        return $this->stmt->fetchAll();
+    }
+
     function getById ($id) {
 		// Get Wine data (maybe later...)
 		$sql = "
