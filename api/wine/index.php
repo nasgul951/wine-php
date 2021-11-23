@@ -6,8 +6,18 @@
 	
 	$wine = new Wine($db_server, $db_name, $db_user, $db_password);
 	try {
-		$result = $wine->allWine();
-		//$rows = toResultArray($result, "row");
+		if ( isset($_GET["varietal"]) )
+		{
+			$varietal = $_GET["varietal"];
+			$result = $wine->allWineByVarietal($varietal);
+		}
+		else if ( isset($_GET["vineyard"]) ){
+			$vineyard = $_GET["vineyard"];
+			$result = $wine->allWineByVineyard($vineyard);
+		}
+		else{
+			$result = $wine->allWine();
+		}
 		respond(true, "OK", $result);
 	} catch (Exception $ex) {
 		respond(false, $ex->getMessage(), []);
