@@ -1,6 +1,9 @@
 <?php
-	if ( $_POST["login"] != NULL ){
-		if ( $_POST["pwd"] == "imzadi" ){
+	$root = realpath($_SERVER["DOCUMENT_ROOT"]);
+	require "$root/config.php";
+
+   if ( $_POST["login"] != NULL ){
+		if ( $_POST["pwd"] == $user_pass ){
 			session_start();
 			$_SESSION["login"] = 1;
 			header( 'Location: ../../main/winelist.php' );

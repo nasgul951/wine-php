@@ -94,22 +94,58 @@ class Wine {
     }
 
     function getById ($id) {
-		// Get Wine data (maybe later...)
+		// Get Wine data (not using this, but maybe later...)
 		$sql = "
 		SELECT varietal, vineyard, label, vintage, notes
 		FROM tblWineList 
 		WHERE wineid = :wineid";
 		
-        $sql = "
-		SELECT storageDescription, binX, binY, depth
+      $sql = "
+		SELECT bottleid, storageDescription, binX, binY, depth
 		FROM tblBottles b INNER JOIN tblStorage s
 		ON b.storageid = s.storageid
 		WHERE consumed = 0
 		AND wineid = :wineid";
 
-        $this->stmt = $this->pdo->prepare($sql);
-        $this->stmt->execute(array(':wineid' => $id));
-        return $this->stmt->fetchAll();
+      $this->stmt = $this->pdo->prepare($sql);
+      $this->stmt->execute(array(':wineid' => $id));
+      return $this->stmt->fetchAll();
     }
+
+    function addWine ($w) {
+      $sql = "
+      INSERT INTO tblWineList (            
+        varietal
+      , vineyard
+      , label
+      , vintage
+      , notes)
+      VALUES(
+        :varietal
+      , :vineyard
+      , :label
+      , :vintage
+      , :notes)";
+
+      $this->stmt = $this->pdo->prepare($sql);
+      $this->stmt->execute(array(
+           ':varietal' => $w['varietal']
+         , ':vineyard' => $w['vineyard']
+         , ':label' => $w['label']
+         , ':vintage' => $w['vintage']
+         , ':notes' => $w['notes']
+      ));
+
+      $sql = "
+		SELECT bottleid, storageDescription, binX, binY, depth
+		FROM tblBottles b INNER JOIN tblStorage s
+		ON b.storageid = s.storageid
+		ORDER BY ts_date DESC
+      LIMIT 1";
+
+      $this->stmt = $this->pdo->prepare($sql);
+      $this->stmt->execute(array(':wineid' => $id));
+      return $this->stmt->fetchAll();
+   }
 }
 ?>
