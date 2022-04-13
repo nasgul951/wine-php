@@ -137,14 +137,53 @@ class Wine {
       ));
 
       $sql = "
-		SELECT bottleid, storageDescription, binX, binY, depth
-		FROM tblBottles b INNER JOIN tblStorage s
-		ON b.storageid = s.storageid
+		SELECT wineid as id, varietal, vineyard, label, vintage, notes
+		FROM tblWineList 
 		ORDER BY ts_date DESC
       LIMIT 1";
 
       $this->stmt = $this->pdo->prepare($sql);
-      $this->stmt->execute(array(':wineid' => $id));
+      $this->stmt->execute();
+      return $this->stmt->fetchAll();
+   }
+
+   function updateWine ($w) {
+      $sql = 
+      "UPDATE tblWineList
+      SET ";
+      
+      $ix = 0;
+      $params = array('id' => $w['id']);
+      foreach($w as $key => $value) {
+         if ($ix > 0) {
+            $sql.=', ';
+         }
+
+         switch($key) {
+            case 'varietal':
+            case 'vineyard':
+            case 'label':
+            case 'vintage':
+            case 'notes':
+               $sql.= $key.' = :'.$key;
+               $params[$key] = $value;
+               $ix++;
+               break;
+         }
+      }
+
+      $sql.= ' WHERE wineid = :id';
+
+      $this->stmt = $this->pdo->prepare($sql);
+      $isExec = $this->stmt->execute($params);
+      
+      $sql = "
+		SELECT wineid as id, varietal, vineyard, label, vintage, notes
+		FROM tblWineList 
+		WHERE wineid = :id";
+
+      $this->stmt = $this->pdo->prepare($sql);
+      $this->stmt->execute(array('id' => $w['id']));
       return $this->stmt->fetchAll();
    }
 }

@@ -26,13 +26,18 @@
 
    function handle_put($wine) {
       try {
-         $body = file_Get_contents("php://input");
-         $o = json_decode($body, true);
-         if (!is_array($o)) {
-            throw new Exception('Failed to decode json body');
-         }
-
+         $o = decodeBody();
          $result = $wine->addWine($o);
+         respond(true, 'Added new wine', $result);
+      } catch (Exception $ex) {
+         respond(false, $ex->getMessage(), []);
+      }
+   }
+
+   function handle_patch($wine) {
+      try {
+         $o = decodeBody();
+         $result = $wine->updateWine($o);
          respond(true, 'Added new wine', $result);
       } catch (Exception $ex) {
          respond(false, $ex->getMessage(), []);
@@ -46,6 +51,9 @@
          break;
       case "PUT":
          handle_put($wine);
+         break;
+      case "PATCH":
+         handle_patch($wine);
          break;
       default:
          header('HTTP/1.1 400', 'bad request');

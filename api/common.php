@@ -34,6 +34,15 @@
 		exit;
 	}
 
+   function decodeBody () {
+      $body = file_Get_contents("php://input");
+      $o = json_decode($body, true);
+      if (!is_array($o)) {
+         throw new Exception('Failed to decode json body');
+      }
+      return $o;
+   }
+   
 	function respond ($success, $msg, $data) {
 		$json = json_encode([
 			"success" => $success,
