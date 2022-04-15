@@ -38,7 +38,7 @@
       try {
          $o = decodeBody();
          $result = $wine->updateWine($o);
-         respond(true, 'Added new wine', $result);
+         respond(true, 'Updated wine', $result);
       } catch (Exception $ex) {
          respond(false, $ex->getMessage(), []);
       }

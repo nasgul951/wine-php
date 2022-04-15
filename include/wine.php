@@ -119,13 +119,15 @@ class Wine {
       , vineyard
       , label
       , vintage
-      , notes)
+      , notes
+      , created_date)
       VALUES(
         :varietal
       , :vineyard
       , :label
       , :vintage
-      , :notes)";
+      , :notes
+      , CURRENT_TIMESTAMP)";
 
       $this->stmt = $this->pdo->prepare($sql);
       $this->stmt->execute(array(
@@ -184,6 +186,77 @@ class Wine {
 
       $this->stmt = $this->pdo->prepare($sql);
       $this->stmt->execute(array('id' => $w['id']));
+      return $this->stmt->fetchAll();
+   }
+   
+   function addBottle ($b) {
+		$sql = "
+      INSERT INTO tblBottles (wineid, storageid, binX, binY, depth, created_date)
+      VALUES(:wineid, :storageid, :binX, :binY, :depth, CURRENT_TIMESTAMP)";
+		
+      $this->stmt = $this->pdo->prepare($sql);
+      $this->stmt->execute(array(
+         ':wineid' => $b['wineid'],
+         ':storageid' => $b['storageid'],
+         ':binX' => $b['binX'],
+         ':binY' => $b['binY'],
+         ':depth' => $b['depth']
+      ));
+
+      $sql = "
+		SELECT bottleid as id, wineid, storageid, binX, binY, depth
+		FROM tblBottles
+		ORDER BY ts_date DESC
+      LIMIT 1";
+
+      $this->stmt = $this->pdo->prepare($sql);
+      $this->stmt->execute();
+      return $this->stmt->fetchAll();
+    }
+
+    function updateBottle ($b) {
+      $sql = 
+      "UPDATE tblBottles
+      SET ";
+      
+      $ix = 0;
+      $params = array('id' => $b['id']);
+      foreach($b as $key => $value) {
+         if ($ix > 0) {
+            $sql.=', ';
+         }
+
+         switch($key) {
+            case 'wineid':
+            case 'storageid':
+            case 'binX':
+            case 'binY':
+            case 'depth':
+               $sql.= $key.' = :'.$key;
+               $params[$key] = $value;
+               $ix++;
+               break;
+            case 'consumed':
+               if ( $value ) {
+                  $sql.= 'consumed_date = CURRENT_TIMESTAMP';
+                  $ix++;
+               }
+               break; 
+         }
+      }
+
+      $sql.= ' WHERE bottleid = :id';
+
+      $this->stmt = $this->pdo->prepare($sql);
+      $isExec = $this->stmt->execute($params);
+      
+      $sql = "
+		SELECT bottleid as id, wineid, storageid, binX, binY, depth, consumed_date
+		FROM tblBottles
+      WHERE bottleid = :id";
+
+      $this->stmt = $this->pdo->prepare($sql);
+      $this->stmt->execute(array('id' => $b['id']));
       return $this->stmt->fetchAll();
    }
 }
