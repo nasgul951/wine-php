@@ -146,7 +146,7 @@ class Wine {
 
       $this->stmt = $this->pdo->prepare($sql);
       $this->stmt->execute();
-      return $this->stmt->fetchAll();
+      return $this->stmt->fetch();
    }
 
    function updateWine ($w) {
@@ -186,7 +186,7 @@ class Wine {
 
       $this->stmt = $this->pdo->prepare($sql);
       $this->stmt->execute(array('id' => $w['id']));
-      return $this->stmt->fetchAll();
+      return $this->stmt->fetch();
    }
    
    function addBottle ($b) {
@@ -211,7 +211,7 @@ class Wine {
 
       $this->stmt = $this->pdo->prepare($sql);
       $this->stmt->execute();
-      return $this->stmt->fetchAll();
+      return $this->stmt->fetch();
     }
 
     function updateBottle ($b) {
@@ -257,7 +257,7 @@ class Wine {
 
       $this->stmt = $this->pdo->prepare($sql);
       $this->stmt->execute(array('id' => $b['id']));
-      return $this->stmt->fetchAll();
+      return $this->stmt->fetch();
    }
 }
 ?>

@@ -25,7 +25,7 @@
       $body = file_get_contents('php://input');
       $auth = json_decode($body, true);
 
-      if ($auth['password'] != $user_pass) {
+      if ($auth['password'] != $user_pass || $auth['username'] != $user) {
          header('HTTP/1.1 403', 'forbidden');
          echo 'Not Authorized';
          exit;
