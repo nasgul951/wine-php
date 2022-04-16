@@ -39,8 +39,8 @@ class Wine {
         }
     }
 
-    private function wineQuery($andCondition) {
-        return "
+    private function wineQuery($andCondition, $order) {
+      $sql = "
 		SELECT tblWineList.wineid as id
             , varietal
             , vineyard
@@ -50,30 +50,48 @@ class Wine {
             , count(1) as count
 		FROM tblWineList INNER JOIN tblBottles
 		ON tblWineList.wineid = tblBottles.wineid
-		WHERE consumed = 0 "
-        .$andCondition.
-		" GROUP BY tblWineList.wineid, varietal, vineyard, label, vintage, notes
-        ORDER BY vintage";
+		WHERE consumed = 0 
+      ".$andCondition." 
+		GROUP BY tblWineList.wineid, varietal, vineyard, label, vintage, notes 
+      ORDER BY ";
+
+      switch (strtolower($order['field'])) {
+         case 'varietal':
+         case 'vineyard':
+         case 'label':
+         case 'vintage':
+            $sql.= $order['field'];
+            if (strtolower($order['dir']) == 'desc') {
+               $sql.= ' DESC, vintage';
+            } else {
+               $sql.= ', vintage';
+            }
+            break;
+         default:
+            $sql.= ' vintage';
+      }
+
+      return $sql;
     }
 
-    function allWine () {
-        $sql = $this->wineQuery("");
+    function allWine ($sort) {
+        $sql = $this->wineQuery("", $sort);
         $this->stmt = $this->pdo->prepare($sql);
         $this->stmt->execute();
         //PDO::FETCH_CLASS, "wineItem"
         return $this->stmt->fetchAll();
     }
 
-    function allWineByVarietal ($v) {
-        $sql = $this->wineQuery("AND varietal = :v");
+    function allWineByVarietal ($v, $sort) {
+        $sql = $this->wineQuery("AND varietal = :v", $sort);
 
         $this->stmt = $this->pdo->prepare($sql);
         $this->stmt->execute(array(':v' => $v));
         return $this->stmt->fetchAll();
     }
 
-    function allWineByVineyard ($v) {
-        $sql = $this->wineQuery("AND vineyard = :v");
+    function allWineByVineyard ($v, $sort) {
+        $sql = $this->wineQuery("AND vineyard = :v", $sort);
 
         $this->stmt = $this->pdo->prepare($sql);
         $this->stmt->execute(array(':v' => $v));
@@ -94,12 +112,17 @@ class Wine {
     }
 
     function getById ($id) {
-		// Get Wine data (not using this, but maybe later...)
 		$sql = "
-		SELECT varietal, vineyard, label, vintage, notes
+		SELECT wineid as id, varietal, vineyard, label, vintage, notes
 		FROM tblWineList 
 		WHERE wineid = :wineid";
-		
+
+      $this->stmt = $this->pdo->prepare($sql);
+      $this->stmt->execute(array(':wineid' => $id));
+      return $this->stmt->fetch();
+    }
+    
+    function getBottles ($id) {		
       $sql = "
 		SELECT bottleid, storageDescription, binX, binY, depth
 		FROM tblBottles b INNER JOIN tblStorage s

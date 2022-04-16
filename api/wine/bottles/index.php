@@ -16,7 +16,7 @@
       $wineid = $_GET["wineid"];
 
       try {
-         $result = $wine->getById($wineid);
+         $result = $wine->getBottles($wineid);
          respond(true, "OK", $result);
       } catch (Exception $ex) {
          respond(false, $ex->getMessage(), []);

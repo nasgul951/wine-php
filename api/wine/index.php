@@ -4,19 +4,36 @@
 	require "$root/include/wine.php";
    require "$root/api/common.php";
 	   
+   function getSort() {
+      $sort = array();
+      if ( isset($_GET["sort"]) ) {
+         $sort['field'] = $_GET["sort"];
+      }
+      if ( isset($_GET["dir"]) ) {
+         $sort[dir] = $_GET["dir"];
+      }
+
+      return $sort;
+   }
+
    function handle_get($wine) {
+      $sort = getSort();
       try {
          if ( isset($_GET["varietal"]) )
          {
             $varietal = $_GET["varietal"];
-            $result = $wine->allWineByVarietal($varietal);
+            $result = $wine->allWineByVarietal($varietal, $sort);
          }
          else if ( isset($_GET["vineyard"]) ){
             $vineyard = $_GET["vineyard"];
-            $result = $wine->allWineByVineyard($vineyard);
+            $result = $wine->allWineByVineyard($vineyard, $sort);
+         }
+         else if ( isset($_GET["id"]) ){
+            $id = $_GET["id"];
+            $result = $wine->getById($id);
          }
          else{
-            $result = $wine->allWine();
+            $result = $wine->allWine($sort);
          }
          respond(true, "OK", $result);
       } catch (Exception $ex) {
