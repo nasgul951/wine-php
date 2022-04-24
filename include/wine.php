@@ -135,6 +135,42 @@ class Wine {
       return $this->stmt->fetchAll();
     }
 
+    function getBottlesByBin ($binId) {		
+      /* binId is a comprised of
+       * storeid * 1000 + binx * 100 + biny
+       */
+      $storeid = intdiv($binId, 1000); 
+      $mod1k = $binId % 1000;
+      $binX = intdiv($mod1k, 100);
+      $binY = $mod1k % 100;
+
+      $sql = "
+		SELECT 
+           b.bottleid
+         , w.wineid
+         , w.vineyard
+         , w.label
+         , w.varietal
+         , w.vintage
+         , b.depth
+		FROM tblWineList w INNER JOIN tblBottles b
+         ON w.wineid = b.wineid 
+		WHERE b.consumed = 0
+		AND b.storageid = :storageid
+      AND b.binX = :binX
+      AND b.binY = :binY";
+
+      $params = array(
+         ':storageid' => $storeid,
+         ':binX' => $binX,
+         ':binY' => $binY
+      );
+
+      $this->stmt = $this->pdo->prepare($sql);
+      $this->stmt->execute($params);
+      return $this->stmt->fetchAll();
+    }
+
     function addWine ($w) {
       $sql = "
       INSERT INTO tblWineList (            
@@ -281,6 +317,21 @@ class Wine {
       $this->stmt = $this->pdo->prepare($sql);
       $this->stmt->execute(array('id' => $b['id']));
       return $this->stmt->fetch();
+   }
+
+   function getByStore($id) {
+      $sql = "
+      SELECT binY, binX, count(*) AS binCount
+      FROM tblWineList INNER JOIN tblBottles
+      ON tblWineList.wineid = tblBottles.wineid
+      WHERE consumed = 0
+      AND storageid = :id
+      GROUP BY binY, binX
+      ORDER BY binY, binX";
+
+      $this->stmt = $this->pdo->prepare($sql);
+      $this->stmt->execute(array('id' => $id));
+      return $this->stmt->fetchAll();
    }
 }
 ?>
