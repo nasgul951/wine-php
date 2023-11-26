@@ -10,7 +10,7 @@
          $sort['field'] = $_GET["sort"];
       }
       if ( isset($_GET["dir"]) ) {
-         $sort[dir] = $_GET["dir"];
+         $sort['dir'] = $_GET["dir"];
       }
 
       return $sort;

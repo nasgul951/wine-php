@@ -122,16 +122,23 @@ class Wine {
       return $this->stmt->fetch();
     }
     
-    function getBottles ($id) {		
+    function getBottles ($wineId) {		
       $sql = "
-		SELECT bottleid, storageDescription, binX, binY, depth
+		SELECT 
+         bottleid as id, 
+         wineid as wineId,
+         s.storageid as storageId, 
+         storageDescription, 
+         binX, 
+         binY, 
+         depth
 		FROM tblBottles b INNER JOIN tblStorage s
 		ON b.storageid = s.storageid
 		WHERE consumed = 0
 		AND wineid = :wineid";
 
       $this->stmt = $this->pdo->prepare($sql);
-      $this->stmt->execute(array(':wineid' => $id));
+      $this->stmt->execute(array(':wineid' => $wineId));
       return $this->stmt->fetchAll();
     }
 
@@ -255,15 +262,21 @@ class Wine {
 		
       $this->stmt = $this->pdo->prepare($sql);
       $this->stmt->execute(array(
-         ':wineid' => $b['wineid'],
-         ':storageid' => $b['storageid'],
+         ':wineid' => $b['wineId'],
+         ':storageid' => $b['storageId'],
          ':binX' => $b['binX'],
          ':binY' => $b['binY'],
          ':depth' => $b['depth']
       ));
 
       $sql = "
-		SELECT bottleid as id, wineid, storageid, binX, binY, depth
+		SELECT 
+         bottleid as id, 
+         wineid as wineId, 
+         storageid as storageId, 
+         binX, 
+         binY, 
+         depth
 		FROM tblBottles
 		ORDER BY ts_date DESC
       LIMIT 1";
@@ -286,8 +299,12 @@ class Wine {
          }
 
          switch($key) {
-            case 'wineid':
-            case 'storageid':
+            case 'wineId':
+            case 'storageId':
+               $sql.= strtolower($key).' = :'.$key;
+               $params[$key] = $value;
+               $ix++;
+               break;
             case 'binX':
             case 'binY':
             case 'depth':
@@ -310,7 +327,14 @@ class Wine {
       $isExec = $this->stmt->execute($params);
       
       $sql = "
-		SELECT bottleid as id, wineid, storageid, binX, binY, depth, consumed_date
+		SELECT 
+         bottleid as id, 
+         wineid as wineId, 
+         storageid as storageId, 
+         binX, 
+         binY, 
+         depth, 
+         consumed_date as consumedDate
 		FROM tblBottles
       WHERE bottleid = :id";
 
