@@ -22,16 +22,18 @@
 	}
 
    if (strtoupper($method) == 'POST') {
-      $body = file_get_contents('php://input');
+	  $wine = new Wine($db_server, $db_name, $db_user, $db_password);
+	  $body = file_get_contents('php://input');
       $auth = json_decode($body, true);
 
-      if ($auth['password'] != $user_pass || $auth['username'] != $user) {
+	  $result = $wine->login($auth['username'], $auth['password']);
+	  if (!$result) {
          header('HTTP/1.1 403', 'forbidden');
          echo 'Not Authorized';
          exit;
       }
 
-      $response = json_encode(['token' => $api_key]);
+      $response = json_encode($result);
 		header('Content-type: application/json');
 		echo $response;
       exit;

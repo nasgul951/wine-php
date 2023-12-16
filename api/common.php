@@ -1,4 +1,8 @@
 <?php
+	$root = realpath($_SERVER["DOCUMENT_ROOT"]);
+	require "$root/config.php";
+	require "$root/include/wine.php";
+
 	// CORS: Allow from any origin
 	if (isset($_SERVER['HTTP_ORIGIN'])) {
 		header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
@@ -27,8 +31,10 @@
 		exit;
 	}
 	
+	$wine = new Wine($db_server, $db_name, $db_user, $db_password);
 	$key = $headers["x-api-key"];
-	if ($key != $api_key) {
+	$currentUser = $wine->getUser($key);
+	if (!$currentUser) {
 		header('HTTP/1.1 403', 'forbidden');
 		echo 'Not Authorized';
 		exit;

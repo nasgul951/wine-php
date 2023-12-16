@@ -39,7 +39,7 @@ class Wine {
         }
     }
 
-    private function wineQuery($andCondition, $order) {
+   private function wineQuery($andCondition, $order) {
       $sql = "
 		SELECT tblWineList.wineid as id
             , varietal
@@ -74,7 +74,80 @@ class Wine {
       return $sql;
     }
 
-    function allWine ($sort) {
+    function login ($username, $password) {
+      $sql = "
+      SELECT            
+        id
+      , username
+      , password
+      , salt
+      FROM users
+      WHERE
+        username = :username";
+      $this->stmt = $this->pdo->prepare($sql);
+      $this->stmt->execute(array(
+           ':username' => $username
+      ));
+      $user = $this->stmt->fetch();
+
+      if (!$user) {
+         return false;
+      }
+
+      $hashedPw = hash('sha256', $user['salt'].$password);
+      if ($user['password'] != $hashedPw) {
+         return false;
+      }
+
+      $key = base64_encode(random_bytes(24));
+      $sql = "
+		UPDATE 
+         users
+      SET
+         `key` = :key,
+         key_expires = date_add(CURRENT_TIMESTAMP, INTERVAL 30 MINUTE)
+		WHERE id = :id";
+
+      $this->stmt = $this->pdo->prepare($sql);
+      $this->stmt->execute(array(
+         ':key' => $key,
+         ':id' => $user['id']
+      ));
+
+      $sql = "
+      SELECT
+         `key` as token,
+         key_expires as expires
+      FROM
+         users
+      WHERE
+         id = :id";
+      $this->stmt = $this->pdo->prepare($sql);
+      $this->stmt->execute(array(
+         ':id' => $user['id']
+      ));
+      return $this->stmt->fetch();
+   }
+
+   function getUser ($key) {
+      $sql = "
+		SELECT 
+         username,
+         key_expires as sessionExpires
+      FROM 
+         users
+      WHERE
+         `key` = :key
+         AND key_expires > CURRENT_TIMESTAMP";
+
+      $this->stmt = $this->pdo->prepare($sql);
+      $this->stmt->execute(array(
+         ':key' => $key
+      ));
+      return $this->stmt->fetch();
+   }
+
+   function allWine ($sort) {
         $sql = $this->wineQuery("", $sort);
         $this->stmt = $this->pdo->prepare($sql);
         $this->stmt->execute();
@@ -131,7 +204,8 @@ class Wine {
          storageDescription, 
          binX, 
          binY, 
-         depth
+         depth,
+         b.created_date as createdDate
 		FROM tblBottles b INNER JOIN tblStorage s
 		ON b.storageid = s.storageid
 		WHERE consumed = 0
@@ -160,6 +234,7 @@ class Wine {
          , w.varietal
          , w.vintage
          , b.depth
+         , b.created_date as createdDate
 		FROM tblWineList w INNER JOIN tblBottles b
          ON w.wineid = b.wineid 
 		WHERE b.consumed = 0
@@ -276,7 +351,8 @@ class Wine {
          storageid as storageId, 
          binX, 
          binY, 
-         depth
+         depth,
+         created_date as createdDate
 		FROM tblBottles
 		ORDER BY ts_date DESC
       LIMIT 1";
@@ -314,7 +390,7 @@ class Wine {
                break;
             case 'consumed':
                if ( $value ) {
-                  $sql.= 'consumed_date = CURRENT_TIMESTAMP';
+                  $sql.= 'consumed = 1, consumed_date = CURRENT_TIMESTAMP';
                   $ix++;
                }
                break; 
