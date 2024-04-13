@@ -105,7 +105,8 @@ class Wine {
          users
       SET
          `key` = :key,
-         key_expires = date_add(CURRENT_TIMESTAMP, INTERVAL 30 MINUTE)
+         key_expires = date_add(CURRENT_TIMESTAMP, INTERVAL 30 MINUTE),
+         last_on = CURRENT_TIMESTAMP
 		WHERE id = :id";
 
       $this->stmt = $this->pdo->prepare($sql);
@@ -133,7 +134,8 @@ class Wine {
       $sql = "
 		SELECT 
          username,
-         key_expires as sessionExpires
+         key_expires as sessionExpires,
+         last_on as lastLogin
       FROM 
          users
       WHERE
@@ -145,6 +147,22 @@ class Wine {
          ':key' => $key
       ));
       return $this->stmt->fetch();
+   }
+
+   function logout ($key) {
+      $sql = "
+		UPDATE users
+      SET 
+         `key` = null,
+         key_expires = null
+      WHERE
+         `key` = :key";
+
+      $this->stmt = $this->pdo->prepare($sql);
+      $this->stmt->execute(array(
+         ':key' => $key
+      ));
+      return true;
    }
 
    function allWine ($sort) {

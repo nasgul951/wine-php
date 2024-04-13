@@ -32,8 +32,8 @@
 	}
 	
 	$wine = new Wine($db_server, $db_name, $db_user, $db_password);
-	$key = $headers["x-api-key"];
-	$currentUser = $wine->getUser($key);
+	$x_api_key = $headers["x-api-key"];
+	$currentUser = $wine->getUser($x_api_key);
 	if (!$currentUser) {
 		header('HTTP/1.1 403', 'forbidden');
 		echo 'Not Authorized';
