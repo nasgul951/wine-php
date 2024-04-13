@@ -257,8 +257,8 @@ class Wine {
          ON w.wineid = b.wineid 
 		WHERE b.consumed = 0
 		AND b.storageid = :storageid
-      AND b.binX = :binX
-      AND b.binY = :binY";
+      AND ((b.binY = :binY AND 0 = :binX)
+      OR (b.binY = :binY AND b.binX = :binX))";
 
       $params = array(
          ':storageid' => $storeid,
